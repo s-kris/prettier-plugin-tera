@@ -62,6 +62,6 @@ const plugin: Plugin = {
   }
 };
 
-export default plugin;
+module.exports = plugin;
 export { parseTeraTemplate, printTeraAst };
 export type { TeraOptions };
