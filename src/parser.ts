@@ -1,5 +1,5 @@
-import { Parser } from 'htmlparser2';
-import { Element, Text, Comment } from 'domhandler';
+import { parseDocument } from 'htmlparser2';
+import { Element, Text, Comment, Node } from 'domhandler';
 import { 
   TeraNode, 
   RootNode, 
@@ -187,12 +187,12 @@ function parseTextWithTeraConstructs(text: string, startOffset = 0): TeraNode[] 
   return nodes;
 }
 
-function convertDomNodeToTeraNode(domNode: any): TeraNode[] {
-  if (domNode.type === 'text') {
+function convertDomNodeToTeraNode(domNode: Node): TeraNode[] {
+  if (domNode instanceof Text) {
     return parseTextWithTeraConstructs(domNode.data);
   }
   
-  if (domNode.type === 'tag') {
+  if (domNode instanceof Element) {
     const htmlNode: HtmlNode = {
       type: 'html',
       tagName: domNode.name,
@@ -215,7 +215,7 @@ function convertDomNodeToTeraNode(domNode: any): TeraNode[] {
     return [htmlNode];
   }
   
-  if (domNode.type === 'comment') {
+  if (domNode instanceof Comment) {
     return [{
       type: 'text',
       value: `<!--${domNode.data}-->`,
@@ -228,17 +228,14 @@ function convertDomNodeToTeraNode(domNode: any): TeraNode[] {
 }
 
 export function parseTeraTemplate(text: string): RootNode {
-  const parser = new Parser({
-    onparserentity: (name: string) => {
-      // Handle HTML entities properly
-      return `&${name};`;
-    }
+  const document = parseDocument(text, {
+    lowerCaseAttributeNames: false,
+    decodeEntities: true
   });
   
-  const dom = parser.parseComplete(text);
   const children: TeraNode[] = [];
   
-  for (const domNode of dom) {
+  for (const domNode of document.children) {
     children.push(...convertDomNodeToTeraNode(domNode));
   }
   
