@@ -1,0 +1,18 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "overrides": [
+    {
+      "files": ["**/*.tera", "**/*.html.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2"],
+      "options": {
+        "parser": "tera-template",
+        "teraExpressionSpacing": true,
+        "teraBlockIndentation": 2,
+        "preserveTeraWhitespace": false
+      }
+    }
+  ]
+}

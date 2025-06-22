@@ -1,0 +1,54 @@
+{
+  "name": "prettier-plugin-tera",
+  "version": "1.0.0",
+  "description": "Prettier plugin for Tera/Jinja2 HTML templates",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "prettier",
+    "plugin",
+    "tera",
+    "jinja2",
+    "template",
+    "html",
+    "formatter"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "peerDependencies": {
+    "prettier": "^2.0.0 || ^3.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "htmlparser2": "^9.0.0",
+    "domhandler": "^5.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/prettier-plugin-tera.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/prettier-plugin-tera/issues"
+  },
+  "homepage": "https://github.com/your-username/prettier-plugin-tera#readme"
+}

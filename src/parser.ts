@@ -1,0 +1,251 @@
+import { Parser } from 'htmlparser2';
+import { Element, Text, Comment } from 'domhandler';
+import { 
+  TeraNode, 
+  RootNode, 
+  HtmlNode, 
+  TextNode, 
+  TeraExpressionNode,
+  TeraStatementNode,
+  TeraCommentNode,
+  TeraBlockNode 
+} from './types';
+
+const TERA_EXPRESSION_REGEX = /\{\{\s*(.*?)\s*\}\}/g;
+const TERA_STATEMENT_REGEX = /\{\%\s*(.*?)\s*\%\}/g;
+const TERA_COMMENT_REGEX = /\{\#\s*(.*?)\s*\#\}/g;
+const TERA_BLOCK_KEYWORDS = ['if', 'for', 'macro', 'block', 'set', 'filter'];
+const TERA_END_KEYWORDS = ['endif', 'endfor', 'endmacro', 'endblock', 'endset', 'endfilter'];
+
+interface TokenMatch {
+  type: 'expression' | 'statement' | 'comment';
+  content: string;
+  start: number;
+  end: number;
+  raw: string;
+}
+
+function tokenizeTeraConstructs(text: string): TokenMatch[] {
+  const tokens: TokenMatch[] = [];
+  
+  // Find all Tera expressions {{ }}
+  let match;
+  while ((match = TERA_EXPRESSION_REGEX.exec(text)) !== null) {
+    tokens.push({
+      type: 'expression',
+      content: match[1].trim(),
+      start: match.index,
+      end: match.index + match[0].length,
+      raw: match[0]
+    });
+  }
+  
+  // Find all Tera statements {% %}
+  TERA_STATEMENT_REGEX.lastIndex = 0;
+  while ((match = TERA_STATEMENT_REGEX.exec(text)) !== null) {
+    tokens.push({
+      type: 'statement',
+      content: match[1].trim(),
+      start: match.index,
+      end: match.index + match[0].length,
+      raw: match[0]
+    });
+  }
+  
+  // Find all Tera comments {# #}
+  TERA_COMMENT_REGEX.lastIndex = 0;
+  while ((match = TERA_COMMENT_REGEX.exec(text)) !== null) {
+    tokens.push({
+      type: 'comment',
+      content: match[1].trim(),
+      start: match.index,
+      end: match.index + match[0].length,
+      raw: match[0]
+    });
+  }
+  
+  // Sort tokens by position
+  return tokens.sort((a, b) => a.start - b.start);
+}
+
+function parseTeraExpression(content: string, start: number, end: number, raw: string): TeraExpressionNode {
+  const parts = content.split('|').map(p => p.trim());
+  const expression = parts[0];
+  const filters = parts.length > 1 ? parts.slice(1) : undefined;
+  
+  return {
+    type: 'tera-expression',
+    expression,
+    filters,
+    start,
+    end,
+    raw
+  };
+}
+
+function parseTeraStatement(content: string, start: number, end: number, raw: string): TeraStatementNode | TeraBlockNode {
+  const parts = content.split(/\s+/);
+  const keyword = parts[0];
+  
+  if (TERA_BLOCK_KEYWORDS.includes(keyword)) {
+    return {
+      type: 'tera-block',
+      keyword,
+      name: parts[1] || undefined,
+      children: [],
+      start,
+      end,
+      raw
+    };
+  }
+  
+  return {
+    type: 'tera-statement',
+    statement: content,
+    keyword,
+    condition: parts.slice(1).join(' ') || undefined,
+    start,
+    end,
+    raw
+  };
+}
+
+function parseTeraComment(content: string, start: number, end: number, raw: string): TeraCommentNode {
+  return {
+    type: 'tera-comment',
+    content,
+    start,
+    end,
+    raw
+  };
+}
+
+function parseTextWithTeraConstructs(text: string, startOffset = 0): TeraNode[] {
+  const tokens = tokenizeTeraConstructs(text);
+  const nodes: TeraNode[] = [];
+  let lastEnd = 0;
+  
+  for (const token of tokens) {
+    // Add text before the token
+    if (token.start > lastEnd) {
+      const textContent = text.slice(lastEnd, token.start);
+      if (textContent.trim()) {
+        nodes.push({
+          type: 'text',
+          value: textContent,
+          start: startOffset + lastEnd,
+          end: startOffset + token.start
+        });
+      }
+    }
+    
+    // Add the Tera construct
+    let teraNode: TeraNode;
+    switch (token.type) {
+      case 'expression':
+        teraNode = parseTeraExpression(
+          token.content, 
+          startOffset + token.start, 
+          startOffset + token.end,
+          token.raw
+        );
+        break;
+      case 'statement':
+        teraNode = parseTeraStatement(
+          token.content,
+          startOffset + token.start,
+          startOffset + token.end,
+          token.raw
+        );
+        break;
+      case 'comment':
+        teraNode = parseTeraComment(
+          token.content,
+          startOffset + token.start,
+          startOffset + token.end,
+          token.raw
+        );
+        break;
+    }
+    nodes.push(teraNode);
+    lastEnd = token.end;
+  }
+  
+  // Add remaining text
+  if (lastEnd < text.length) {
+    const textContent = text.slice(lastEnd);
+    if (textContent.trim()) {
+      nodes.push({
+        type: 'text',
+        value: textContent,
+        start: startOffset + lastEnd,
+        end: startOffset + text.length
+      });
+    }
+  }
+  
+  return nodes;
+}
+
+function convertDomNodeToTeraNode(domNode: any): TeraNode[] {
+  if (domNode.type === 'text') {
+    return parseTextWithTeraConstructs(domNode.data);
+  }
+  
+  if (domNode.type === 'tag') {
+    const htmlNode: HtmlNode = {
+      type: 'html',
+      tagName: domNode.name,
+      attributes: Object.entries(domNode.attribs || {}).map(([name, value]) => ({
+        name,
+        value: value as string
+      })),
+      children: [],
+      selfClosing: domNode.children.length === 0,
+      start: 0, // Will be set properly in full implementation
+      end: 0    // Will be set properly in full implementation
+    };
+    
+    if (domNode.children) {
+      for (const child of domNode.children) {
+        htmlNode.children!.push(...convertDomNodeToTeraNode(child));
+      }
+    }
+    
+    return [htmlNode];
+  }
+  
+  if (domNode.type === 'comment') {
+    return [{
+      type: 'text',
+      value: `<!--${domNode.data}-->`,
+      start: 0,
+      end: 0
+    }];
+  }
+  
+  return [];
+}
+
+export function parseTeraTemplate(text: string): RootNode {
+  const parser = new Parser({
+    onparserentity: (name: string) => {
+      // Handle HTML entities properly
+      return `&${name};`;
+    }
+  });
+  
+  const dom = parser.parseComplete(text);
+  const children: TeraNode[] = [];
+  
+  for (const domNode of dom) {
+    children.push(...convertDomNodeToTeraNode(domNode));
+  }
+  
+  return {
+    type: 'root',
+    children,
+    start: 0,
+    end: text.length
+  };
+}

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title | default(value="My Website") }}</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <a href="/" class="brand">{{ site_name }}</a>
+                <ul class="nav-links">
+                    {% for item in navigation %}
+                        <li>
+                            <a href="{{ item.url }}" {% if item.active %}class="active"{% endif %}>
+                                {{ item.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.type }}">
+                        <strong>{{ message.type | title }}:</strong>
+                        {{ message.text | safe }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+            <div class="container">
+                <h1>{{ heading | default(value="Welcome") }}</h1>
+                <p>This is the default content block.</p>
+            </div>
+        {% endblock content %}
+    </main>
+
+    {% if user.is_authenticated %}
+        <aside class="user-sidebar">
+            <div class="user-info">
+                <img src="{{ user.avatar | default(value='/static/img/default-avatar.png') }}" 
+                     alt="{{ user.name }}'s avatar" 
+                     class="avatar">
+                <h3>{{ user.name }}</h3>
+                <p>{{ user.email }}</p>
+                
+                {% if user.last_login %}
+                    <p class="last-login">
+                        Last login: {{ user.last_login | date(format="%B %d, %Y at %I:%M %p") }}
+                    </p>
+                {% endif %}
+            </div>
+            
+            <nav class="user-nav">
+                <ul>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+    {% endif %}
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>{{ site_name }}</h4>
+                    <p>{{ site_description | truncate(length=100) }}</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        {% for link in footer_links %}
+                            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Email: {{ contact_email }}</p>
+                    <p>Phone: {{ contact_phone | default(value="Not available") }}</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; {{ current_year }} {{ site_name }}. All rights reserved.</p>
+                {# This is a comment that won't appear in the rendered HTML #}
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}
+        <script src="{{ static_url }}/js/main.js"></script>
+        {% if debug %}
+            <script src="{{ static_url }}/js/debug.js"></script>
+        {% endif %}
+    {% endblock scripts %}
+</body>
+</html>
