@@ -7,7 +7,7 @@ A [Prettier](https://prettier.io/) plugin for formatting [Tera](https://github.c
 ## Features
 
 - ✅ Formats Tera/Jinja2 template syntax (`{{ }}`, `{% %}`, `{# #}`)
-- ✅ Preserves HTML structure while formatting template constructs  
+- ✅ Preserves HTML structure while formatting template constructs
 - ✅ Supports complex nested templates and template inheritance
 - ✅ Configurable formatting options
 - ✅ Compatible with existing HTML and template workflows
@@ -23,8 +23,9 @@ npm install --save-dev prettier prettier-plugin-tera
 ### Basic Usage
 
 Once installed, the plugin will automatically format files with these extensions:
+
 - `.tera`
-- `.html.tera` 
+- `.html.tera`
 - `.jinja`
 - `.jinja2`
 - `.j2`
@@ -38,7 +39,13 @@ Add to your `.prettierrc` file:
   "plugins": ["prettier-plugin-tera"],
   "overrides": [
     {
-      "files": ["**/*.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2", "**/*.html"],
+      "files": [
+        "**/*.tera",
+        "**/*.jinja",
+        "**/*.jinja2",
+        "**/*.j2",
+        "**/*.html"
+      ],
       "options": {
         "parser": "tera-template",
         "teraExpressionSpacing": true,
@@ -54,48 +61,48 @@ Add to your `.prettierrc` file:
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `teraExpressionSpacing` | `boolean` | `true` | Add spaces inside Tera expression braces: `{{ var }}` vs `{{var}}` |
-| `teraBlockIndentation` | `number` | `2` | Number of spaces to indent Tera block content |
-| `preserveTeraWhitespace` | `boolean` | `false` | Preserve original whitespace in text nodes |
+| Option                   | Type      | Default | Description                                                        |
+| ------------------------ | --------- | ------- | ------------------------------------------------------------------ |
+| `teraExpressionSpacing`  | `boolean` | `true`  | Add spaces inside Tera expression braces: `{{ var }}` vs `{{var}}` |
+| `teraBlockIndentation`   | `number`  | `2`     | Number of spaces to indent Tera block content                      |
+| `preserveTeraWhitespace` | `boolean` | `false` | Preserve original whitespace in text nodes                         |
 
 ## Examples
 
 ### Input
+
 ```html
 <div class="{{css_class}}">
-{% if user.is_authenticated %}
-<h1>Hello {{user.name|default(value="Guest")}}</h1>
-<ul>
-{% for item in user.items %}
-<li>{{item.title|upper}}</li>
-{% endfor %}
-</ul>
-{% endif %}
-{# TODO: Add user preferences #}
+  {% if user.is_authenticated %}
+  <h1>Hello {{user.name|default(value="Guest")}}</h1>
+  <ul>
+    {% for item in user.items %}
+    <li>{{item.title|upper}}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} {# TODO: Add user preferences #}
 </div>
 ```
 
 ### Formatted Output
+
 ```html
 <div class="{{ css_class }}">
   {% if user.is_authenticated %}
-    <h1>Hello {{ user.name | default(value="Guest") }}</h1>
-    <ul>
-      {% for item in user.items %}
-        <li>{{ item.title | upper }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
-  {# TODO: Add user preferences #}
+  <h1>Hello {{ user.name | default(value="Guest") }}</h1>
+  <ul>
+    {% for item in user.items %}
+    <li>{{ item.title | upper }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} {# TODO: Add user preferences #}
 </div>
 ```
 
 ## Supported Template Constructs
 
 - **Expressions**: `{{ variable }}`, `{{ variable | filter }}`
-- **Statements**: `{% if condition %}`, `{% for item in items %}`  
+- **Statements**: `{% if condition %}`, `{% for item in items %}`
 - **Comments**: `{# comment #}`
 - **Blocks**: `{% block name %}...{% endblock %}`, `{% block name %}...{% endblock name %}`
 - **Macros**: `{% macro name(args) %}...{% endmacro %}`
@@ -112,7 +119,12 @@ Add to your `.prettierrc` file:
 
 ```json
 {
-  "prettier.documentSelectors": ["**/*.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2"],
+  "prettier.documentSelectors": [
+    "**/*.tera",
+    "**/*.jinja",
+    "**/*.jinja2",
+    "**/*.j2"
+  ],
   "[tera]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -177,3 +189,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [Tera](https://github.com/Keats/tera) - Template engine for Rust
 - [djLint](https://github.com/djlint/djLint) - HTML template linter and formatter
 - [prettier-plugin-jinja-template](https://github.com/davidodenwald/prettier-plugin-jinja-template) - Similar plugin for Jinja templates
+
+---
+
+Made with ❤️ by [@\_skris](https://x.com/_skris)

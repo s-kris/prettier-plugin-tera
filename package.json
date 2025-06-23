@@ -28,7 +28,7 @@
     "liquid",
     "templating"
   ],
-  "author": "Your Name",
+  "author": "Sai Krishna",
   "license": "MIT",
   "peerDependencies": {
     "prettier": "^2.0.0 || ^3.0.0"
@@ -50,10 +50,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/prettier-plugin-tera.git"
+    "url": "https://github.com/s-kris/prettier-plugin-tera.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/prettier-plugin-tera/issues"
+    "url": "https://github.com/s-kris/prettier-plugin-tera/issues"
   },
-  "homepage": "https://github.com/your-username/prettier-plugin-tera#readme"
+  "homepage": "https://github.com/s-kris/prettier-plugin-tera#readme"
 }
