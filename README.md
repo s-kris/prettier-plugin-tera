@@ -1,5 +1,7 @@
 # prettier-plugin-tera
 
+> **Note**: I built this with [Claude Code](https://claude.ai/code). I haven't written even a single line of code as of writing this.
+
 A [Prettier](https://prettier.io/) plugin for formatting [Tera](https://github.com/Keats/tera) and Jinja2 HTML templates.
 
 ## Features
