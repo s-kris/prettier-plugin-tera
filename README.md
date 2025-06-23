@@ -36,7 +36,7 @@ Add to your `.prettierrc` file:
   "plugins": ["prettier-plugin-tera"],
   "overrides": [
     {
-      "files": ["**/*.tera", "**/*.jinja", "**/*.jinja2"],
+      "files": ["**/*.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2", "**/*.html"],
       "options": {
         "parser": "tera-template",
         "teraExpressionSpacing": true,
@@ -47,6 +47,8 @@ Add to your `.prettierrc` file:
   ]
 }
 ```
+
+**Note**: Add `"**/*.html"` to the files array if your HTML files contain Tera/Jinja2 syntax.
 
 ## Configuration Options
 
@@ -93,9 +95,11 @@ Add to your `.prettierrc` file:
 - **Expressions**: `{{ variable }}`, `{{ variable | filter }}`
 - **Statements**: `{% if condition %}`, `{% for item in items %}`  
 - **Comments**: `{# comment #}`
-- **Blocks**: `{% block name %}...{% endblock %}`
-- **Macros**: `{% macro name %}...{% endmacro %}`
-- **Template inheritance**: `{% extends %}`, `{% include %}`
+- **Blocks**: `{% block name %}...{% endblock %}`, `{% block name %}...{% endblock name %}`
+- **Macros**: `{% macro name(args) %}...{% endmacro %}`
+- **Template inheritance**: `{% extends "base.html" %}`, `{% include "partial.html" %}`
+- **Control flow**: `{% else %}`, `{% elif condition %}`
+- **Other tags**: `{% set %}`, `{% filter %}`, `{% raw %}...{% endraw %}`
 
 ## Editor Integration
 
@@ -106,9 +110,18 @@ Add to your `.prettierrc` file:
 
 ```json
 {
-  "prettier.documentSelectors": ["**/*.tera", "**/*.jinja", "**/*.jinja2"],
+  "prettier.documentSelectors": ["**/*.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2"],
   "[tera]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jinja]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.associations": {
+    "*.tera": "html",
+    "*.jinja": "html",
+    "*.jinja2": "html",
+    "*.j2": "html"
   }
 }
 ```
@@ -128,6 +141,26 @@ npm test
 # Run linter
 npm run lint
 ```
+
+## Troubleshooting
+
+### Plugin not loading
+
+If the plugin isn't being recognized:
+
+1. Ensure it's properly installed: `npm ls prettier-plugin-tera`
+2. Try specifying the plugin explicitly in `.prettierrc`:
+   ```json
+   {
+     "plugins": ["./node_modules/prettier-plugin-tera"]
+   }
+   ```
+
+### Formatting issues
+
+- If your HTML files aren't being formatted, make sure to include `"**/*.html"` in the files array
+- For better results with complex templates, consider increasing `printWidth` in your Prettier config
+- Use `preserveTeraWhitespace: true` if you need to maintain exact spacing in certain templates
 
 ## Contributing
 
