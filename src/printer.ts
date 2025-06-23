@@ -189,28 +189,29 @@ function printNode(node: TeraNode, options: PrinterOptions, indentLevel = 0): st
 }
 
 function printRootNode(node: RootNode, options: PrinterOptions): string {
-  let result = '';
+  const outputs: string[] = [];
   
   for (let i = 0; i < node.children.length; i++) {
     const child = node.children[i];
     const childOutput = printNode(child, options, 0);
     
+    // Skip empty text nodes
+    if (child.type === 'text' && !childOutput.trim()) {
+      continue;
+    }
+    
     if (childOutput.trim()) {
-      result += childOutput;
-      
-      // Add spacing between top-level elements
-      if (i < node.children.length - 1) {
-        const nextChild = node.children[i + 1];
-        if (child.type === 'html' && nextChild.type === 'html') {
-          result += '\n';
-        } else if (child.type === 'tera-block' || nextChild.type === 'tera-block') {
-          result += '\n';
-        }
-      }
+      outputs.push(childOutput.trim());
     }
   }
   
-  return result + '\n';
+  // Join with newlines and ensure single trailing newline
+  let result = outputs.join('\n');
+  if (result.length > 0) {
+    result += '\n';
+  }
+  
+  return result;
 }
 
 export function printTeraAst(
