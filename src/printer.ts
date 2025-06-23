@@ -75,7 +75,12 @@ function formatTeraBlock(
     }
   }
   
-  result += `${indent}{%${spacing}end${node.keyword}${spacing}%}`;
+  // For block statements, include the block name in the end tag
+  result += `${indent}{%${spacing}end${node.keyword}`;
+  if (node.keyword === 'block' && node.name) {
+    result += ` ${node.name}`;
+  }
+  result += `${spacing}%}`;
   return result;
 }
 
