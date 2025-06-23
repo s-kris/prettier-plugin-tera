@@ -1,0 +1,16 @@
+{
+  "plugins": ["../lib/index.js"],
+  "printWidth": 100,
+  "tabWidth": 2,
+  "overrides": [
+    {
+      "files": ["**/*.tera", "**/*.html.tera", "**/*.jinja", "**/*.jinja2", "**/*.j2"],
+      "options": {
+        "parser": "tera-template",
+        "teraExpressionSpacing": true,
+        "teraBlockIndentation": 2,
+        "preserveTeraWhitespace": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+<div class="{{css_class}}">
+<h1>{{title|default(value="Default Title")}}</h1>
+{% if user %}
+<p>Hello {{user.name}}!</p>
+<ul>
+{% for item in user.items %}
+<li>{{item.name|upper}}</li>
+{% endfor %}
+</ul>
+{% endif %}
+{# This is a comment #}
+</div>
