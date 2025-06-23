@@ -18,10 +18,15 @@
     "prettier",
     "plugin",
     "tera",
+    "jinja",
     "jinja2",
     "template",
     "html",
-    "formatter"
+    "formatter",
+    "django",
+    "nunjucks",
+    "liquid",
+    "templating"
   ],
   "author": "Your Name",
   "license": "MIT",
